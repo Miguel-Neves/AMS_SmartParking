@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Testar API do gerador de QRCodes</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script type="text/javascript">
+            function generateBarCode()
+            {
+                var park = $('#text').val();
+                var code = park.replace(/\s+/g, '') + Math.floor(Math.random()*1000000001);
+                var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + code + '&amp;size=100x100';
+                $('#qrcode').attr('src', url);
+                $('div#qrstring').text(code);
+            }
+        </script>
+    </head>
+    <body>
+        <h4>Teste à API do gerador de QRCodes</h4>
+        <hr />
+        <div class="row">
+            <p>Introduza um parque de estacionamento:</p>
+            <input id="text" type="text" value="Parque de Estacionamento Saba Marquês de Pombal" style="Width:30%"/>
+            <p></p>
+            <button onclick="generateBarCode();">Gerar QRCode</button>
+        </div>
+
+        <div class="row">
+              <img id='qrcode' src="https://api.qrserver.com/v1/create-qr-code/?data=Parque de Estacionamento Saba Marquês de Pombal&amp;size=100x100"
+                    alt="" title="HELLO" width="100" height="100" />
+        </div>
+        <div class="row">
+            Código (aleatório) gerado:
+        </div>
+        <div class="row" id="qrstring">
+        </div>
+
+        <hr />
+        <div class="row">
+            <form action="autenticateinout">
+                <input type="submit" value="Voltar" class="btn btn-default">
+            </form>
+        </div>
+    </body>
+</html>

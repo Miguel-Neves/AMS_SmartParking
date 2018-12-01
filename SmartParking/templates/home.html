@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+    <div class="row">
+    <div class="col-md-8">
+        <p></p>
+        <section id="park-search">
+            <div class="column">
+                <img src="/static/assets/park-search-icon.png" alt="logo_aut" height="40" width="40" align="left">
+            </div>
+            <div class="column">
+                <form action="">
+                    <input type="submit" value="Procurar estacionamento" class="btn btn-default" src="/s">
+                </form>
+            </div>
+        </section>
+        <p></p>
+        <section id="aut-inout">
+            <div class="column">
+                <img src="/static/assets/barrier-gate-icon.png" alt="logo_aut" height="40" width="40" align="left">
+            </div>
+            <div class="column">
+                <form action="autenticateinout">
+                    <input type="submit" value="Autenticar entrada/saída" class="btn btn-default" src="/s">
+                </form>
+            </div>
+        </section>
+        <p></p>
+        <section id="rate-park">
+            <div class="column">
+                <img src="/static/assets/rate-icon.png" alt="logo_aut" height="40" width="40" align="left">
+            </div>
+            <div class="column">
+                <form action="">
+                    <input type="submit" value="Avaliar parque de estacionamento" class="btn btn-default" src="/s">
+                </form>
+            </div>
+        </section>
+    </div>
+    </div>
+
+{% else %}
+
+    <div class="row">
+    <div class="column">
+        <img src="/static/assets/logo_simple_transp.png" alt="logo" align="right">
+        <h2><b>Bem-vindo ao SmartParking!</b></h2>
+        <h3>A aplicação que lhe permite encontrar estacionamento da maneira mais fácil, rápida e cómoda!</h3>
+    </div>
+    </div>
+
+{% endif %}
+
+{% endblock %}

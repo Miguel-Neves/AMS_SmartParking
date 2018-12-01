@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8">
+        <p>Apresente este código no respectivo leitor à entrada e saída do parque de estacionamento:</p>
+        <img src="/static/assets/QRCode.png" alt="QRCode">
+    </div>
+</div>
+<div class="row">
+    <form action="home">
+        <input type="submit" value="Voltar" class="btn btn-default">
+    </form>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <p>Ligação de teste da API do gerador de QRCodes (a ser implementado no projecto final):</p>
+    </div>
+    <form action="qrcodegen">
+        <input type="submit" value="Testar API do gerador de QRCodes" class="btn btn-default">
+    </form>
+</div>
+
+{% endblock %}

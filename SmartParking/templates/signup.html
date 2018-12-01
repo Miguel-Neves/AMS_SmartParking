@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}</h2>
+<div class="row">
+    <div class="col-md-8">
+        <section id="loginForm">
+            <form action="signup" method="post" class="form-horizontal">
+                <h4>Introduza o seu email ou número de telemóvel e uma palavra-passe.</h4>
+                <hr />
+                <div class="form-group">
+                    <label for="id_username"></label>
+                    <div class="col-md-10">
+                        <input id="id_username" maxlength="254" name="username" type="text">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_password"></label>
+                    <div class="col-md-10">
+                        <input id="id_password" name="password" type="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Signup" class="btn btn-default" />
+                    </div>
+                </div>
+                {% if errors %}
+                <p class="validation-summary-errors">O email/número de telemóvel introduzido já se encontra registado. Por favor, introduza um diferente.</p>
+                {% endif %}
+            </form>
+        </section>
+    </div>
+    <div class="col-md-4">
+        <section id="socialLoginForm"></section>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="static/scripts/jquery.validate.min.js"></script>
+{% endblock %}
