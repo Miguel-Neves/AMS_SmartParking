@@ -169,6 +169,25 @@ class WebApp(object):
             return self.render('autenticateinout.html', tparams)
 
     @cherrypy.expose
+    def findpark(self):
+        if not self.get_user()['is_authenticated']:
+            self.home()
+        else:
+            tparams = {
+                'user': self.get_user(),
+                'year': datetime.now().year,
+            }
+            return self.render('findpark.html', tparams)
+
+    @cherrypy.expose
+    def googleapi(self):
+        tparams = {
+            'user': self.get_user(),
+            'year': datetime.now().year,
+        }
+        return self.render('googleapi.html', tparams)
+
+    @cherrypy.expose
     def qrcodegen(self):
         tparams = {
             'user': self.get_user(),

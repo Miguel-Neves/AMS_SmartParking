@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8">
+        <p>Selecione um parque de estacionamento para obter mais detalhes e fazer a sua reserva:</p>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m12!1m8!1m3!1d12110.762267726735!2d-8.649762001701149!3d40.636705538881706!3m2!1i1024!2i768!4f13.1!2m1!1sestacionamento!5e0!3m2!1sen!2spt!4v1544442648025"
+                width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+    </div>
+</div>
+<div class="row">
+    <form action="home">
+        <input type="submit" value="Voltar" class="btn btn-default">
+    </form>
+</div>
+<div class="row">
+    <form action="googleapi">
+        <input type="submit" value="GoogleAPI" class="btn btn-default">
+    </form>
+</div>
+
+{% endblock %}
