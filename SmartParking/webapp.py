@@ -180,14 +180,6 @@ class WebApp(object):
             return self.render('findpark.html', tparams)
 
     @cherrypy.expose
-    def googleapi(self):
-        tparams = {
-            'user': self.get_user(),
-            'year': datetime.now().year,
-        }
-        return self.render('googleapi.html', tparams)
-
-    @cherrypy.expose
     def qrcodegen(self):
         tparams = {
             'user': self.get_user(),
@@ -218,10 +210,6 @@ if __name__ == '__main__':
         '/static': {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './static'
-        },
-        'global': {
-        	'server.socket_host': '0.0.0.0',
-        	'server.socket_port': int(os.environ.get('PORT', 5000)),
-		}
+        }
     }
     cherrypy.quickstart(WebApp(), '/', conf)

@@ -5,18 +5,46 @@
 <div class="row">
     <div class="col-md-8">
         <p>Selecione um parque de estacionamento para obter mais detalhes e fazer a sua reserva:</p>
-        <iframe src="https://www.google.com/maps/embed?pb=!1m12!1m8!1m3!1d12110.762267726735!2d-8.649762001701149!3d40.636705538881706!3m2!1i1024!2i768!4f13.1!2m1!1sestacionamento!5e0!3m2!1sen!2spt!4v1544442648025"
-                width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+
+        <div id="mapid"></div>
+
+          <script>
+
+          function onMarkerClick(e) {
+              var parque = e.target.getPopup().getContent();
+              parque = parque.substring(3, parque.length-4);
+              $('p#park').text(parque);
+          }
+
+          var mymap = L.map('mapid').setView([40.638186, -8.651519], 15);
+          var marker1 = L.marker([40.638794, -8.652168]).addTo(mymap);
+          marker1.bindPopup("<b>Parque Saba Marquês de Pombal</b>");
+          marker1.on('click', onMarkerClick);
+          var marker2 = L.marker([40.640944, -8.651877]).addTo(mymap);
+          marker2.bindPopup("<b>Parque do Fórum Aveiro</b>");
+          marker2.on('click', onMarkerClick);
+          var marker3 = L.marker([40.642524, -8.645182]).addTo(mymap);
+          marker3.bindPopup("<b>Parque Estacionamento Nossa Sra Aflitos</b>");
+          marker3.on('click', onMarkerClick);
+          var marker4 = L.marker([40.629349, -8.654716]).addTo(mymap);
+          marker4.bindPopup("<b>Parque UA</b>");
+          marker4.on('click', onMarkerClick);
+
+          L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            accessToken: 'pk.eyJ1IjoibWlndWVsbmV2ZXMiLCJhIjoiY2pweDJqbW53MTUxMzQ0czJhNXdsNDVnbSJ9.uBGc9wOCl55gz5OaqOB8Kw'
+          }).addTo(mymap);
+
+          </script>
+
+        <p id="park">Parque</p>
     </div>
 </div>
 <div class="row">
     <form action="home">
         <input type="submit" value="Voltar" class="btn btn-default">
-    </form>
-</div>
-<div class="row">
-    <form action="googleapi">
-        <input type="submit" value="GoogleAPI" class="btn btn-default">
     </form>
 </div>
 
