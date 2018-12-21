@@ -70,7 +70,7 @@ class WebApp(object):
         for u in users:
             if u['username'] == usr:
                 return False
-        db_json["users"].append({"username": usr, "password": pwd, "park":  ""})
+        db_json["users"].append({"username": usr, "password": pwd, "park":  "", "timestamp": ""})
         json.dump(db_json, open(WebApp.dbjson, 'w'))
         return True
 
@@ -264,9 +264,17 @@ class WebApp(object):
         raise cherrypy.HTTPRedirect("/home")
 
     @cherrypy.expose
-    def endreserve(self):
+    def closereserve(self):
+        r = self.do_getUserReserve(self.get_user()['username'])
+        t = self.do_timedif(self.get_user()['username'])
+        s = str(int(t // 3600)) + "h " + str(int(t // 60)) + "min"
+        tparams = {
+            'title': r,
+            'user': self.get_user(),
+            'year': s,
+        }
         self.do_endreserve(self.get_user()['username'])
-        raise cherrypy.HTTPRedirect("/home")
+        return self.render('closereserve.html', tparams)
 
     @cherrypy.expose
     def findpark(self):
@@ -314,13 +322,24 @@ class WebApp(object):
     def home(self):
         r = self.do_getUserReserve(self.get_user()['username'])
         if r != "":
-            tparams = {
-                'title': r,
-                'errors': True,
-                'user': self.get_user(),
-                'year': datetime.now().year,
-            }
-            return self.render('home.html', tparams)
+            if self.check_userReserveStart(self.get_user()['username']):
+                t = self.do_timedif(self.get_user()['username'])
+                s = str(int(t // 3600)) + "h " + str(int(t // 60)) + "min"
+                tparams = {
+                    'title': r,
+                    'errors': True,
+                    'user': self.get_user(),
+                    'year': s,
+                }
+                return self.render('home.html', tparams)
+            else:
+                tparams = {
+                    'title': r,
+                    'errors': True,
+                    'user': self.get_user(),
+                    'year': "",
+                }
+                return self.render('home.html', tparams)
         else:
             tparams = {
                 'errors': False,

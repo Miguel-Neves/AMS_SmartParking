@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Reserva terminada!</h2>
+<b>Parque: </b> {{ title }}
+<br>
+<b>Tempo: </b> {{ year }}
+
+<div class="row">
+    <form action="home">
+        <input type="submit" value="Voltar" class="btn btn-default">
+    </form>
+</div>
+
+{% endblock %}
