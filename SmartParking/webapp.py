@@ -13,13 +13,12 @@ class WebApp(object):
 
     def __init__(self):
         self.env = Environment(
-                loader=PackageLoader('webapp', 'templates'),
-                autoescape=select_autoescape(['html', 'xml'])
-                )
+            loader=PackageLoader('webapp', 'templates'),
+            autoescape=select_autoescape(['html', 'xml'])
+        )
 
-
-########################################################################################################################
-#   Utilities
+    ########################################################################################################################
+    #   Utilities
 
     def set_user(self, username=None):
         if username == None:
@@ -27,17 +26,14 @@ class WebApp(object):
         else:
             cherrypy.session['user'] = {'is_authenticated': True, 'username': username}
 
-
     def get_user(self):
         if not 'user' in cherrypy.session:
             self.set_user()
         return cherrypy.session['user']
 
-
     def render(self, tpg, tps):
         template = self.env.get_template(tpg)
         return template.render(tps)
-
 
     def db_connection(db_file):
         try:
@@ -47,9 +43,8 @@ class WebApp(object):
             print(e)
         return None
 
-
     def do_authenticationDB(self, usr, pwd):
-        #user = self.get_user()
+        # user = self.get_user()
         db_con = WebApp.db_connection(WebApp.dbsqlite)
         sql = "select password from users where username == '{}'".format(usr)
         cur = db_con.execute(sql)
@@ -59,9 +54,8 @@ class WebApp(object):
                 self.set_user(usr)
         db_con.close()
 
-
     def do_authenticationJSON(self, usr, pwd):
-        #user = self.get_user()
+        # user = self.get_user()
         db_json = json.load(open(WebApp.dbjson))
         users = db_json['users']
         for u in users:
@@ -69,20 +63,68 @@ class WebApp(object):
                 self.set_user(usr)
                 break
 
-
     def do_registerJSON(self, usr, pwd):
         db_json = json.load(open(WebApp.dbjson))
         users = db_json['users']
         for u in users:
             if u['username'] == usr:
                 return False
-        db_json["users"].append({"username": usr, "password": pwd})
+        db_json["users"].append({"username": usr, "password": pwd, "park":  ""})
         json.dump(db_json, open(WebApp.dbjson, 'w'))
         return True
 
+    def check_userHasReserve(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        for u in users:
+            if u['username'] == usr:
+                if u['park'] == "":
+                    return False
+                else:
+                    return True
 
-########################################################################################################################
-#   Controllers
+    def do_getUserReserve(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        for u in users:
+            if u['username'] == usr:
+                return u['park']
+
+    def do_parkReserve(self, usr, park_name):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        parks = db_json['parks']
+        for p in parks:
+            if p['name'] == park_name:
+                if p['free_spaces'] <= 0:
+                    return False
+                else:
+                    for u in users:
+                        if u['username'] == usr:
+                            p['free_spaces'] -= 1
+                            u['park'] = park_name
+                            json.dump(db_json, open(WebApp.dbjson, 'w'))
+                            return True
+        return False
+
+    def do_endreserve(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        parks = db_json['parks']
+        park_name = ""
+        for u in users:
+            if u['username'] == usr:
+                park_name = u['park']
+                u['park'] = ""
+                break
+        for p in parks:
+            if p['name'] == park_name:
+                p['free_spaces'] += 1
+                break
+        json.dump(db_json, open(WebApp.dbjson, 'w'))
+
+    ########################################################################################################################
+    #   Controllers
 
     @cherrypy.expose
     def index(self):
@@ -92,7 +134,6 @@ class WebApp(object):
         }
         return self.render('home.html', tparams)
 
-
     @cherrypy.expose
     def about(self):
         tparams = {
@@ -101,7 +142,6 @@ class WebApp(object):
             'year': datetime.now().year,
         }
         return self.render('about.html', tparams)
-
 
     @cherrypy.expose
     def login(self, username=None, password=None):
@@ -115,7 +155,7 @@ class WebApp(object):
             return self.render('login.html', tparams)
         else:
             self.do_authenticationJSON(username, password)
-            #self.do_authenticationDB(username, password)
+            # self.do_authenticationDB(username, password)
             if not self.get_user()['is_authenticated']:
                 tparams = {
                     'title': 'Entrar',
@@ -125,14 +165,12 @@ class WebApp(object):
                 }
                 return self.render('login.html', tparams)
             else:
-                raise cherrypy.HTTPRedirect("/")
-
+                raise cherrypy.HTTPRedirect("/home")
 
     @cherrypy.expose
     def logout(self):
         self.set_user()
         raise cherrypy.HTTPRedirect("/")
-
 
     @cherrypy.expose
     def signup(self, username=None, password=None):
@@ -162,22 +200,55 @@ class WebApp(object):
         if not self.get_user()['is_authenticated']:
             self.home()
         else:
-            tparams = {
-                'user': self.get_user(),
-                'year': datetime.now().year,
-            }
-            return self.render('autenticateinout.html', tparams)
+            if not self.check_userHasReserve(self.get_user()['username']):
+                raise cherrypy.HTTPRedirect("/home")
+            else:
+                r = self.do_getUserReserve(self.get_user()['username'])
+                tparams = {
+                    'title': r,
+                    'user': self.get_user(),
+                    'year': datetime.now().year,
+                }
+                return self.render('autenticateinout.html', tparams)
+
+    @cherrypy.expose
+    def endreserve(self):
+        self.do_endreserve(self.get_user()['username'])
+        raise cherrypy.HTTPRedirect("/home")
 
     @cherrypy.expose
     def findpark(self):
         if not self.get_user()['is_authenticated']:
             self.home()
         else:
+            if self.check_userHasReserve(self.get_user()['username']):
+                raise cherrypy.HTTPRedirect("/home")
+            else:
+                tparams = {
+                    'user': self.get_user(),
+                    'year': datetime.now().year,
+                }
+                return self.render('findpark.html', tparams)
+
+    @cherrypy.expose
+    def reserve(self, park=None):
+        if park is None or park == "":
             tparams = {
+                'errors': False,
                 'user': self.get_user(),
                 'year': datetime.now().year,
             }
             return self.render('findpark.html', tparams)
+        else:
+            if self.do_parkReserve(self.get_user()['username'], park):
+                raise cherrypy.HTTPRedirect("/home")
+            else:
+                tparams = {
+                    'errors': True,
+                    'user': self.get_user(),
+                    'year': datetime.now().year,
+                }
+                return self.render('findpark.html', tparams)
 
     @cherrypy.expose
     def qrcodegen(self):
@@ -189,12 +260,22 @@ class WebApp(object):
 
     @cherrypy.expose
     def home(self):
-        tparams = {
-            'user': self.get_user(),
-            'year': datetime.now().year,
-        }
-        return self.render('home.html', tparams)
-
+        r = self.do_getUserReserve(self.get_user()['username'])
+        if r != "":
+            tparams = {
+                'title': r,
+                'errors': True,
+                'user': self.get_user(),
+                'year': datetime.now().year,
+            }
+            return self.render('home.html', tparams)
+        else:
+            tparams = {
+                'errors': False,
+                'user': self.get_user(),
+                'year': datetime.now().year,
+            }
+            return self.render('home.html', tparams)
 
     @cherrypy.expose
     def shut(self):

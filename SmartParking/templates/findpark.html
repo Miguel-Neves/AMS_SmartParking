@@ -4,7 +4,11 @@
 
 <div class="row">
     <div class="col-md-8">
-        <p>Selecione um parque de estacionamento para obter mais detalhes e fazer a sua reserva:</p>
+        {% if errors %}
+            <p class="validation-summary-errors">De momento, o parque escolhido escontra-se lotado. Por favor, selecione outro parque de estacionamento:</p>
+        {% else %}
+            <p>Selecione um parque de estacionamento para fazer a sua reserva:</p>
+        {% endif %}
 
         <div id="mapid"></div>
 
@@ -13,18 +17,18 @@
           function onMarkerClick(e) {
               var parque = e.target.getPopup().getContent();
               parque = parque.substring(3, parque.length-4);
-              $('p#park').text(parque);
+              document.getElementById("id_park").setAttribute('value',parque);
           }
 
           var mymap = L.map('mapid').setView([40.638186, -8.651519], 15);
           var marker1 = L.marker([40.638794, -8.652168]).addTo(mymap);
-          marker1.bindPopup("<b>Parque Saba Marquês de Pombal</b>");
+          marker1.bindPopup("<b>Parque Saba Marques de Pombal</b>");
           marker1.on('click', onMarkerClick);
           var marker2 = L.marker([40.640944, -8.651877]).addTo(mymap);
-          marker2.bindPopup("<b>Parque do Fórum Aveiro</b>");
+          marker2.bindPopup("<b>Parque do Forum Aveiro</b>");
           marker2.on('click', onMarkerClick);
           var marker3 = L.marker([40.642524, -8.645182]).addTo(mymap);
-          marker3.bindPopup("<b>Parque Estacionamento Nossa Sra Aflitos</b>");
+          marker3.bindPopup("<b>Parque Nossa Sra Aflitos</b>");
           marker3.on('click', onMarkerClick);
           var marker4 = L.marker([40.629349, -8.654716]).addTo(mymap);
           marker4.bindPopup("<b>Parque UA</b>");
@@ -39,7 +43,12 @@
 
           </script>
 
-        <p id="park">Parque</p>
+        <hr/>
+        <form action="reserve" method="post" class="form-horizontal">
+            <label for="id_park"></label>
+            <input id="id_park" name="park" type="text" value="" size="500" readonly>
+            <input type="submit" value="Reservar" class="btn btn-default" />
+        </form>
     </div>
 </div>
 <div class="row">

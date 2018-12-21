@@ -2,6 +2,10 @@
 
 {% block content %}
 
+    {% if errors %}
+                <p class="validation-summary-errors">Por favor, introduza uma combinação email/número de telemóvel e palavra-passe válida.</p>
+    {% endif %}
+
 <h2>{{ title }}</h2>
 <div class="row">
     <div class="col-md-8">

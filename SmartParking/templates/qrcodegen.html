@@ -3,10 +3,10 @@
         <title>Testar API do gerador de QRCodes</title>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script type="text/javascript">
-            function generateBarCode()
+            function generateBarCode(usr)
             {
                 var park = $('#text').val();
-                var code = park.replace(/\s+/g, '') + Math.floor(Math.random()*1000000001);
+                var code = usr + park.replace(/\s+/g, '') + Math.floor(Math.random()*1000000001);
                 var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + code + '&amp;size=100x100';
                 $('#qrcode').attr('src', url);
                 $('div#qrstring').text(code);
@@ -20,7 +20,7 @@
             <p>Introduza um parque de estacionamento:</p>
             <input id="text" type="text" value="Parque de Estacionamento Saba Marquês de Pombal" style="Width:30%"/>
             <p></p>
-            <button onclick="generateBarCode();">Gerar QRCode</button>
+            <button onclick='generateBarCode("{{ user.username }}");'>Gerar QRCode</button>
         </div>
 
         <div class="row">

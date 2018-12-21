@@ -8,12 +8,26 @@
         <img src="/static/assets/QRCode.png" alt="QRCode">
     </div>
 </div>
+<b>Reserva ativa: </b> {{ title }}
 <div class="row">
     <form action="home">
         <input type="submit" value="Voltar" class="btn btn-default">
     </form>
 </div>
+
 <hr />
+
+<div class="row">
+<div class="col-md-8">
+    <p>Simular autenticação de saída do parque: </p>
+</div>
+    <form action="endreserve">
+        <input type="submit" value="Fim da reserva" class="btn btn-default">
+    </form>
+</div>
+
+<hr />
+
 <div class="row">
     <div class="col-md-8">
         <p>Ligação de teste da API do gerador de QRCodes (a ser implementado no projecto final):</p>
