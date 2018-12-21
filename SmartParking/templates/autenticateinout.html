@@ -9,6 +9,10 @@
     </div>
 </div>
 <b>Reserva ativa: </b> {{ title }}
+    {% if errors %}
+        [ {{ year }} ]
+    {% endif %}
+
 <div class="row">
     <form action="home">
         <input type="submit" value="Voltar" class="btn btn-default">
@@ -17,20 +21,34 @@
 
 <hr />
 
-<div class="row">
-<div class="col-md-8">
-    <p>Simular autenticação de saída do parque: </p>
-</div>
-    <form action="endreserve">
-        <input type="submit" value="Fim da reserva" class="btn btn-default">
-    </form>
-</div>
+    {% if errors %}
+        <div class="row">
+        <div class="col-md-8">
+            <p>Simular autenticação de saída do parque: </p>
+        </div>
+            <form action="endreserve">
+                <input type="submit" value="Fim do estacionamento" class="btn btn-default">
+            </form>
+        </div>
+
+    {% else %}
+
+        <div class="row">
+        <div class="col-md-8">
+            <p>Simular autenticação de entrada do parque: </p>
+        </div>
+            <form action="startreserve">
+                <input type="submit" value="Início do estacionamento" class="btn btn-default">
+            </form>
+        </div>
+
+    {% endif %}
 
 <hr />
 
 <div class="row">
     <div class="col-md-8">
-        <p>Ligação de teste da API do gerador de QRCodes (a ser implementado no projecto final):</p>
+        <p>Ligação de teste da API do gerador de QRCodes (para melhor visualização do código gerado):</p>
     </div>
     <form action="qrcodegen">
         <input type="submit" value="Testar API do gerador de QRCodes" class="btn btn-default">

@@ -5,6 +5,7 @@ from datetime import datetime
 import sqlite3
 from sqlite3 import Error
 import json
+import time
 
 
 class WebApp(object):
@@ -83,6 +84,23 @@ class WebApp(object):
                 else:
                     return True
 
+    def check_userReserveStart(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        for u in users:
+            if u['username'] == usr:
+                if u['timestamp'] == "":
+                    return False
+                else:
+                    return True
+
+    def do_getReserveTime(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        for u in users:
+            if u['username'] == usr:
+                return float(u['timestamp'])
+
     def do_getUserReserve(self, usr):
         db_json = json.load(open(WebApp.dbjson))
         users = db_json['users']
@@ -107,6 +125,15 @@ class WebApp(object):
                             return True
         return False
 
+    def do_startreserve(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        for u in users:
+            if u['username'] == usr:
+                u['timestamp'] = time.time()
+                break
+        json.dump(db_json, open(WebApp.dbjson, 'w'))
+
     def do_endreserve(self, usr):
         db_json = json.load(open(WebApp.dbjson))
         users = db_json['users']
@@ -116,12 +143,20 @@ class WebApp(object):
             if u['username'] == usr:
                 park_name = u['park']
                 u['park'] = ""
+                u['timestamp'] = ""
                 break
         for p in parks:
             if p['name'] == park_name:
                 p['free_spaces'] += 1
                 break
         json.dump(db_json, open(WebApp.dbjson, 'w'))
+
+    def do_timedif(self, usr):
+        db_json = json.load(open(WebApp.dbjson))
+        users = db_json['users']
+        for u in users:
+            if u['username'] == usr:
+                return time.time() - float(u['timestamp'])
 
     ########################################################################################################################
     #   Controllers
@@ -204,12 +239,29 @@ class WebApp(object):
                 raise cherrypy.HTTPRedirect("/home")
             else:
                 r = self.do_getUserReserve(self.get_user()['username'])
-                tparams = {
-                    'title': r,
-                    'user': self.get_user(),
-                    'year': datetime.now().year,
-                }
-                return self.render('autenticateinout.html', tparams)
+                if self.check_userReserveStart(self.get_user()['username']):
+                    t = self.do_timedif(self.get_user()['username'])
+                    s = str(int(t//3600)) + "h " + str(int(t//60)) + "min"
+                    tparams = {
+                        'title': r,
+                        'errors': True,
+                        'user': self.get_user(),
+                        'year': s,
+                    }
+                    return self.render('autenticateinout.html', tparams)
+                else:
+                    tparams = {
+                        'title': r,
+                        'errors': False,
+                        'user': self.get_user(),
+                        'year': datetime.now().year,
+                    }
+                    return self.render('autenticateinout.html', tparams)
+
+    @cherrypy.expose
+    def startreserve(self):
+        self.do_startreserve(self.get_user()['username'])
+        raise cherrypy.HTTPRedirect("/home")
 
     @cherrypy.expose
     def endreserve(self):
